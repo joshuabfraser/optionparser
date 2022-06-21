@@ -9,15 +9,6 @@ OptionParser::OptionParser()
 
 }
 
-//void OptionParser::addOption(char flag, const std::string &name,
-//                             const std::string &description,
-//                             const std::string &valueName,
-//                             const std::string &defaultValue)
-//{
-//  longoption opt{flag, name, description, valueName, defaultValue};
-//  m_options.push_back({flag, name, description, valueName, defaultValue});
-//}
-
 bool OptionParser::parse(int argc, char *argv[])
 {
   // Get program name if not set
@@ -28,28 +19,48 @@ bool OptionParser::parse(int argc, char *argv[])
   }
 
   std::vector<struct option> options;
-  std::string flags = ":";
+  std::string flags = "";
 
-  int i = 0;
+  // Construct optstring and longopts array for getopt_long()
   for(const auto& o : m_options)
   {
-    options.push_back({ o.name.c_str(), required_argument, 0, o.flag });
-
     if(o.flag)
-      flags += o.flag + std::string(":");
+      flags += o.flag;
+
+    if(o.value.empty())
+    {
+      options.push_back({ o.name.c_str(), no_argument, 0, o.flag });
+    } else {
+      options.push_back({ o.name.c_str(), required_argument, 0, o.flag });
+      flags += ':';
+    }
   }
 
-  std::cout << "flags: " << flags << '\n';
+  // Terminate longopts with all zeros
+  options.push_back({0, 0, 0, 0});
 
-  int index = 0;
-  int o;
+  int o, index = -1;
   while((o = getopt_long(argc, argv, &flags[0], &options[0], &index)) != -1)
   {
-    std::cout << "o = " << char(o) << '\n';
-    std::cout << "Got index " << index << "\n";
+    if(o == '?')
+      return false;
+
+    std::string longname = index < 0 ? "" : options[index].name;
+
+    int found = getOptionIndex(o, longname);
+
+    if(found < 0) return false;
 
     if(optarg)
-      std::cout << "Got argument " << optarg << '\n';
+    {
+      m_options[found].result = std::string(optarg);
+    } else {
+      m_options[found].result = std::string("true");
+    }
+
+    // getopt_long() sets index to offset in long options for long-only option;
+    // reset to -1 to detect when long-only option is given
+    index = -1;
   }
 
   return true;
@@ -94,10 +105,24 @@ std::string OptionParser::helpString() const
 
   for(const auto& o : m_options)
   {
+    std::string defaultString ;
+    if(!o.defaultValue.empty())
+      defaultString = " (Default: " + o.defaultValue + ")";
+
     stream << std::left << std::setw(flagWidth) << formatFlags(o);
-    stream << std::left << std::setw(80 - flagWidth) << o.description
-           << std::endl;
+    stream << std::left << std::setw(80 - flagWidth)
+           << (o.description +  defaultString) << std::endl;
   }
 
   return stream.str();
+}
+
+int OptionParser::getOptionIndex(char flag, const std::string &name) const
+{
+  for(int i = 0; i < m_options.size(); ++i)
+  {
+    if(m_options[i].name == name) return i;
+    if(flag != '\0' && m_options[i].flag == flag) return i;
+  }
+  return -1;
 }

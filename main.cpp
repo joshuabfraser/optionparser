@@ -7,12 +7,13 @@ int main(int argc, char *argv[])
 {
   OptionParser parser;
 
-  parser.addOption('h', "help", "Display this help.", "", "");
+  int total = 8192;
+  parser.addHelpOption();
   parser.addOption('\0', "longoptiononly", "", "", "");
   parser.addOption('r', "radius", "Radius of circle to sample", "radius",
                    10.0f);
   parser.addOption('t', "total", "Total number of samples", "samples",
-                   8192);
+                   total);
   parser.addOption(0, "stupid", "Stupid flag that only accepts long option.",
                    "string", "");
 
@@ -21,23 +22,29 @@ int main(int argc, char *argv[])
                    reallylong);
   parser.addOption('s', "", "Short flag only.", "", "");
 
+  parser.addPositionalArgument("input");
+  parser.addPositionalArgument("ouptut");
+
   parser.parse(argc, argv);
 
-  if(parser.isSet("help"))
+  std::cout << "Positional arguments: \n";
+  for(const auto& a : parser.arguments())
   {
-    std::cout << parser.helpString();
-    exit(EXIT_SUCCESS);
+    std::cout << a << '\n';
   }
-
   float radius = 0.0;
   parser.getOptionalValue("radius", &radius);
   std::cout << "Got radius = " << radius << '\n';
 
-  int samples;
-  parser.getRequiredValue("total", &samples);
-
   std::string stupid;
   parser.getOptionalValue("stupid", &stupid);
   std::cout << "stupid = " << stupid << '\n';
+
+  if(!parser.getOptionalValue("total", &total))
+  {
+    std::cerr << "Failed converting option \"--total\"\n";
+  }
+  std::cout << "total = " << total << '\n';
+
   return 0;
 }

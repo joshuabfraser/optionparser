@@ -31,9 +31,15 @@ public:
     return true;
   }
 
-  void addHelpOption()
+  void addPositionalArgument(const std::string& arg)
+  {
+    m_positional.push_back(arg);
+  }
+
+  void addHelpOption(const std::string& message = "Display help message.")
   {
     m_hasHelp = true;
+    addOption('h', "help", message, "", "");
   }
 
   bool parse(int argc, char *argv[]);
@@ -74,9 +80,12 @@ public:
     if(option.result.empty() && option.defaultValue.empty()) return false;
 
     std::stringstream ss(option.result.empty() ? option.defaultValue : option.result);
+
     ss >> *value;
 
-    return ss.good();
+    // Success if stream is ok and entire string converted; note good() and
+    // eof() are mutually exclusive.
+    return ss && ss.eof();
   }
 
   template<typename T>
@@ -90,6 +99,8 @@ public:
 
     return getOptionalValue(name, value);
   }
+
+  const std::vector<std::string>& arguments() const { return m_arguments; }
 
 private:
 
@@ -110,6 +121,8 @@ private:
   std::string m_programName;
   bool m_hasHelp = false;
 
+  std::vector<std::string> m_positional;
+  std::vector<std::string> m_arguments;
 };
 
 #endif // OPTIONPARSER_H

@@ -63,6 +63,14 @@ bool OptionParser::parse(int argc, char *argv[])
     index = -1;
   }
 
+  m_arguments = std::vector<std::string>(argv + optind, argv + optind + (argc - optind));
+
+  if(m_hasHelp && isSet("help"))
+  {
+    std::cout << helpString();
+    exit(EXIT_SUCCESS);
+  }
+
   return true;
 }
 
@@ -91,7 +99,10 @@ std::string OptionParser::helpString() const
 
   std::stringstream stream;
 
-  stream << "usage: " <<  m_programName << " [options]" << std::endl
+  stream << "usage: " <<  m_programName << " [options]";
+  for(const auto& a : m_positional)
+    stream << ' ' << a;
+  stream << std::endl
          << std::endl
          << "Options:" << std::endl;
 

@@ -38,6 +38,12 @@ public:
   }
 
   bool addOption(char flag, const std::string &name,
+                 const std::string &description, const std::string &valueName)
+  {
+    return addOption(flag, name, description, valueName, "");
+  }
+
+  bool addOption(char flag, const std::string &name,
                  const std::string &description, const std::string &valueName,
                  const bool &defaultValue)
   {

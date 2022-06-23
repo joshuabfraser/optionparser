@@ -1,5 +1,6 @@
 #ifndef OPTIONPARSER_H
 #define OPTIONPARSER_H
+#include <functional>
 #include <getopt.h>
 #include <sstream>
 #include <string>
@@ -9,6 +10,11 @@ class OptionParser
 {
 public:
   OptionParser();
+
+  void setErrorFunction(std::function<void (const std::string &)> error)
+  {
+    m_error = error;
+  }
 
   template<typename T>
   bool addOption(char flag, const std::string &name,
@@ -20,8 +26,8 @@ public:
 
     if(!ss)
     {
-      std::cerr << "Unable to string convert default value for option "
-                << name << '\n';
+      m_error("Unable to string convert default value for option "
+                + name + '\n');
       return false;
     }
 
@@ -92,6 +98,9 @@ public:
       *value = false;
       return true;
     }
+
+    m_error("Failed to convert boolean value for option --" + name);
+
     return false;
   }
 
@@ -109,7 +118,10 @@ public:
 
     // Success if stream is ok and entire string converted; note good() and
     // eof() are mutually exclusive.
-    return stream && stream.eof();
+    bool success = stream && stream.eof();
+    if(!success) m_error("Failed to convert option --" + name);
+
+    return success;
   }
 
   template<typename T>
@@ -117,8 +129,7 @@ public:
   {
     if(!isSet(name))
     {
-      std::cerr << "Missing required option " << name << '\n';
-      exit(EXIT_FAILURE);
+      m_error("Missing required option " + name);
     }
 
     return getOptionalValue(name, value);
@@ -149,6 +160,12 @@ private:
 
   std::vector<std::string> m_positional;
   std::vector<std::string> m_arguments;
+
+  std::function<void (const std::string &)> m_error = [](const std::string& s)
+  {
+    std::cerr << s << '\n';
+    exit(EXIT_FAILURE);
+  };
 };
 
 #endif // OPTIONPARSER_H

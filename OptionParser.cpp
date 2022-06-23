@@ -6,7 +6,6 @@
 
 OptionParser::OptionParser()
 {
-
 }
 
 bool OptionParser::parse(int argc, char *argv[])

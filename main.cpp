@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-  OptionParser parser;
+  OptionParser parser("optionParser");
 
   int total = 8192;
   bool reallylong = false;

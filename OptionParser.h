@@ -9,7 +9,7 @@
 class OptionParser
 {
 public:
-  OptionParser();
+  OptionParser(const std::string &programName = "");
 
   void setErrorFunction(std::function<void (const std::string &)> error)
   {

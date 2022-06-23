@@ -4,7 +4,8 @@
 #include <vector>
 #include "OptionParser.h"
 
-OptionParser::OptionParser()
+OptionParser::OptionParser(const std::string& programName)
+  : m_programName(programName)
 {
 }
 

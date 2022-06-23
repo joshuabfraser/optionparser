@@ -68,30 +68,17 @@ public:
   // Template specialization to read full string including spaces
   bool getOptionalValue(const std::string &name, std::string *value) const
   {
-    int found = getOptionIndex('\0', name);
-
-    if(found < 0) return false;
-
-    auto option = m_options.at(found);
-
-    if(option.result.empty() && option.defaultValue.empty()) return false;
-
-    *value = option.result.empty() ? option.defaultValue : option.result;
+    if(!getOptionValueString(name, value)) return false;
 
     return !(value->empty());
   }
 
   bool getOptionalValue(const std::string &name, bool *value) const
   {
-    int found = getOptionIndex('\0', name);
+    std::string s;
 
-    if(found < 0) return false;
-
-    auto option = m_options.at(found);
-
-    if(option.result.empty() && option.defaultValue.empty()) return false;
-
-    std::string s = option.result.empty() ? option.defaultValue : option.result;
+    // Get string returned from parsing
+    if(!getOptionValueString(name, &s)) return false;
 
     // Check string equivalents for booleans
     if(s == "true"  || s == "on"  || s == "yes" || s == "1")
@@ -111,21 +98,18 @@ public:
   template<typename T>
   bool getOptionalValue(const std::string &name, T *value) const
   {
-    int found = getOptionIndex('\0', name);
+    std::string result;
 
-    if(found < 0) return false;
+    // Get string returned from parsing
+    if(!getOptionValueString(name, &result)) return false;
 
-    auto option = m_options.at(found);
-
-    if(option.result.empty() && option.defaultValue.empty()) return false;
-
-    std::stringstream ss(option.result.empty() ? option.defaultValue : option.result);
-
-    ss >> *value;
+    // Stream convert string to type T
+    std::stringstream stream(result);
+    stream >> *value;
 
     // Success if stream is ok and entire string converted; note good() and
     // eof() are mutually exclusive.
-    return ss && ss.eof();
+    return stream && stream.eof();
   }
 
   template<typename T>
@@ -154,6 +138,8 @@ private:
   };
 
   int getOptionIndex(char o, const std::string& option) const;
+
+  bool getOptionValueString(const std::string& name, std::string* value) const;
 
   std::string formatFlags(const struct longoption& option) const;
 

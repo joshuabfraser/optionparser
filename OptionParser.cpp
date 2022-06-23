@@ -137,3 +137,18 @@ int OptionParser::getOptionIndex(char flag, const std::string &name) const
   }
   return -1;
 }
+
+bool OptionParser::getOptionValueString(const std::string &name,
+                                        std::string *value) const
+{
+  int index = getOptionIndex('\0', name);
+
+  if(index < 0) return false;
+
+  // Favor value set on command line
+  *value = m_options.at(index).result;
+  // If not set from command line, use default (if provided)
+  if(value->empty()) *value = m_options.at(index).defaultValue;
+
+  return true;
+}

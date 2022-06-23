@@ -190,6 +190,8 @@ private:
     std::cerr << s << '\n';
     exit(EXIT_FAILURE);
   };
+
+  int m_maxColumn = 80;
 };
 
 #endif // OPTIONPARSER_H

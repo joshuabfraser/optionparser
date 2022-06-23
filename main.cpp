@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
                    total);
   parser.addOption(0, "stupid", "Stupid flag that only accepts long option.",
                    "string", "");
-  parser.addOption(0, "reallylong", "Flag for really long options and this description is too long.", "bool",
+  parser.addOption(0, "reallylong", "Flag for really long options and this description is too long. Like why would I make this line so damn long?  what's the deal?", "bool",
                    reallylong);
   parser.addOption('s', "", "Short flag only.", "", "");
 

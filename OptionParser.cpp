@@ -94,6 +94,23 @@ std::string OptionParser::formatFlags(const struct longoption& option) const
   return flagStream.str();
 }
 
+std::vector<std::string> linewrap(const std::string& text, int max)
+{
+  std::vector<std::string> result;
+
+  std::string tmp = text;
+  while(tmp.length() > max)
+  {
+    // Find reverse find the nearest space near max
+    size_t space =  tmp.rfind(' ', max);
+    result.push_back(tmp.substr(0, space));
+    tmp.erase(0, space + 1);
+  }
+  result.push_back(tmp);
+
+  return result;
+}
+
 std::string OptionParser::helpString() const
 {
 
@@ -120,9 +137,13 @@ std::string OptionParser::helpString() const
     if(!o.defaultValue.empty())
       defaultString = " (Default: " + o.defaultValue + ")";
 
+    auto wrapped = linewrap(o.description + defaultString, m_maxColumn - flagWidth);
     stream << std::left << std::setw(flagWidth) << formatFlags(o);
-    stream << std::left << std::setw(80 - flagWidth)
-           << (o.description +  defaultString) << std::endl;
+    stream << wrapped.front() << std::endl;
+    for(int i = 1; i < wrapped.size(); ++i)
+      stream << std::string(flagWidth, ' ')
+             << std::left << std::setw(m_maxColumn - flagWidth)
+             << wrapped.at(i) << std::endl;
   }
 
   return stream.str();

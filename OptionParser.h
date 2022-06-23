@@ -2,6 +2,7 @@
 #define OPTIONPARSER_H
 #include <functional>
 #include <getopt.h>
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -42,6 +43,29 @@ public:
   {
     return addOption(flag, name, description, valueName,
                      defaultValue ? "true" : "false");
+  }
+
+  // Specialization to force decimal point when formatting doubles
+  bool addOption(char flag, const std::string &name,
+                 const std::string &description, const std::string &valueName,
+                 const double &defaultValue)
+  {
+    std::stringstream stream;
+    // Force decimal point for floating precision values
+    if(defaultValue == (int)defaultValue)
+      stream << std::fixed << std::setprecision(1);
+
+    stream << defaultValue;
+
+    return addOption(flag, name, description, valueName, stream.str());
+  }
+
+  // Specialization to force decimal point when formatting floats
+  bool addOption(char flag, const std::string &name,
+                 const std::string &description, const std::string &valueName,
+                 const float &defaultValue)
+  {
+    return addOption(flag, name, description, valueName, (double) defaultValue);
   }
 
   bool addOption(char flag, const std::string &name,

@@ -7,10 +7,10 @@ int main(int argc, char *argv[])
 
   int total = 8192;
   bool reallylong = false;
-  float radius = 10.0f;
+  float radius = 10;
 
   parser.addHelpOption();
-  parser.addOption('\0', "longoptiononly", "", "", "");
+  parser.addOption('\0', "longoptiononly","", "", "");
   parser.addOption('r', "radius", "Radius of circle to sample", "radius",
                    radius);
   parser.addOption('t', "total", "Total number of samples", "samples",
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   parser.addOption('s', "", "Short flag only.", "", "");
 
   parser.addPositionalArgument("input");
-  parser.addPositionalArgument("ouptut");
+  parser.addPositionalArgument("output");
 
   parser.parse(argc, argv);
 

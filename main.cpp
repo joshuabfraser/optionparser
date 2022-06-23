@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
   OptionParser parser;
 
   int total = 8192;
+
   parser.addHelpOption();
   parser.addOption('\0', "longoptiononly", "", "", "");
   parser.addOption('r', "radius", "Radius of circle to sample", "radius",
@@ -43,6 +44,12 @@ int main(int argc, char *argv[])
     std::cerr << "Failed converting option \"--total\"\n";
   }
   std::cout << "total = " << total << '\n';
+
+  if(!parser.getOptionalValue("reallylong", &reallylong))
+  {
+    std::cerr << "Failed converting option \"--reallylong\"\n";
+  }
+  std::cout << "Really long: " << reallylong << '\n';
 
   return 0;
 }

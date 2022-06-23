@@ -81,6 +81,33 @@ public:
     return !(value->empty());
   }
 
+  bool getOptionalValue(const std::string &name, bool *value) const
+  {
+    int found = getOptionIndex('\0', name);
+
+    if(found < 0) return false;
+
+    auto option = m_options.at(found);
+
+    if(option.result.empty() && option.defaultValue.empty()) return false;
+
+    std::string s = option.result.empty() ? option.defaultValue : option.result;
+
+    // Check string equivalents for booleans
+    if(s == "true"  || s == "on"  || s == "yes" || s == "1")
+    {
+      *value = true;
+      return true;
+    }
+
+    if(s == "false" || s == "off" || s == "no"  || s == "0")
+    {
+      *value = false;
+      return true;
+    }
+    return false;
+  }
+
   template<typename T>
   bool getOptionalValue(const std::string &name, T *value) const
   {

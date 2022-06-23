@@ -3,7 +3,6 @@
 #include <getopt.h>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 class OptionParser
@@ -31,6 +30,20 @@ public:
     return true;
   }
 
+  bool addOption(char flag, const std::string &name,
+                 const std::string &description, const std::string &valueName,
+                 const bool &defaultValue)
+  {
+    return addOption(flag, name, description, valueName,
+                     defaultValue ? "true" : "false");
+  }
+
+  bool addOption(char flag, const std::string &name,
+                 const std::string &description)
+  {
+    return addOption(flag, name, description, "", "");
+  }
+
   void addPositionalArgument(const std::string& arg)
   {
     m_positional.push_back(arg);
@@ -39,7 +52,7 @@ public:
   void addHelpOption(const std::string& message = "Display help message.")
   {
     m_hasHelp = true;
-    addOption('h', "help", message, "", "");
+    addOption('h', "help", message);
   }
 
   bool parse(int argc, char *argv[]);

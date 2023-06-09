@@ -3,6 +3,7 @@
 #include <functional>
 #include <getopt.h>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>

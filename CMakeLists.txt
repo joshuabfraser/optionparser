@@ -8,5 +8,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(OptionParser OptionParser.cpp OptionParser.h)
 target_include_directories(OptionParser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(options_test main.cpp)
-target_link_libraries(options_test OptionParser)
+add_executable(example example.cpp)
+target_link_libraries(example OptionParser)

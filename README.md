@@ -22,6 +22,7 @@ include(FetchContent)
 FetchContent_Declare(
   OptionParser
   GIT_REPOSITORY https://github.com/joshuabfraser/options
+  GIT_TAG main
 )
 
 FetchContent_MakeAvailable(OptionParser)

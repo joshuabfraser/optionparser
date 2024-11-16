@@ -1,6 +1,7 @@
 #include <OptionParser.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,12 @@ int main(int argc, char *argv[])
   // Command line option with no values
   parser.addOption('s', "skip", "Skip pre-processing.");
 
+  // Command line option that accepts -v, --vector for a range of values
+  // Values can be comma delimited or an inclusive range with an ellipsis,
+  // e.g. 1,2,3,4,5 is the same as 1...5
+  // The inclusive range is incremented by 1
+  parser.addOption('v', "vector", "Add a range to a vector.", "range");
+
   // Adds this value as a positional argument in the help
   parser.addPositionalArgument("output");
 
@@ -40,6 +47,10 @@ int main(int argc, char *argv[])
   // Get optional parameters
   parser.getOptionalValue("exclude", &exclude);
   parser.getOptionalValue("radius", &radius);
+
+  // Get optional range
+  std::vector<int> vec;
+  parser.getOptionalRange("vector", vec);
 
   // Test if option has been specified on the command line
   if(parser.isSet("skip"))
@@ -66,6 +77,10 @@ int main(int argc, char *argv[])
   std::cout << "input:  " << input << '\n';
   std::cout << "exclude: " << exclude << '\n';
   std::cout << "output:  " << output << '\n';
+  std::cout << "vector: ";
+  for(auto v : vec)
+    std::cout << v << ' ';
+  std::cout << '\n';
 
   return 0;
 }

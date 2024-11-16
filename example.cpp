@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     output = positional.at(0);
   } else
   {
-    std::cerr << "Exactly on positional argument required for output.\n"
+    std::cerr << "Exactly one positional argument required for output.\n"
               << parser.helpString();
   }
 

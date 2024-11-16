@@ -1,6 +1,6 @@
 # OptionParser
 
-OptionParser is a `getopt_long()` wrapper library for parsing command-line 
+OptionParser is a `getopt_long()` wrapper library for parsing command-line
 options in C++ for Unix-like platforms.
 
 ## Getting Started
@@ -37,18 +37,15 @@ See `example.cpp` below.  It produces formatted output for help:
 usage: example [options] output
 
 Options:
-  -h, --help            Display help message.                                   
-  -i, --input <file>    Path for input.                                         
-  -r, --radius <float>  Search radius. (Default: 1.0)                           
-  -x, --exclude <bool>  Prune outliers. (Default: false)                        
-  -s, --skip            Skip pre-processing.     
+  -h, --help            Display help message.
+  -i, --input <file>    Path for input.
+  -r, --radius <float>  Search radius. (Default: 1.0)
+  -x, --exclude <bool>  Prune outliers. (Default: false)
+  -s, --skip            Skip pre-processing.
+  -v, --vector <range>  Add a range to a vector.
 ```
 
 ```c++
-#include <OptionParser.h>
-#include <iostream>
-#include <string>
-
 int main(int argc, char *argv[])
 {
   // Initialize with program name that will be shown in the help
@@ -74,6 +71,12 @@ int main(int argc, char *argv[])
   // Command line option with no values
   parser.addOption('s', "skip", "Skip pre-processing.");
 
+  // Command line option that accepts -v, --vector for a range of values
+  // Values can be comma delimited or an inclusive range with an ellipsis,
+  // e.g. 1,2,3,4,5 is the same as 1...5
+  // The inclusive range is incremented by 1
+  parser.addOption('v', "vector", "Add a range to a vector.", "range");
+
   // Adds this value as a positional argument in the help
   parser.addPositionalArgument("output");
 
@@ -87,6 +90,10 @@ int main(int argc, char *argv[])
   // Get optional parameters
   parser.getOptionalValue("exclude", &exclude);
   parser.getOptionalValue("radius", &radius);
+
+  // Get optional range
+  std::vector<int> vec;
+  parser.getOptionalRange("vector", vec);
 
   // Test if option has been specified on the command line
   if(parser.isSet("skip"))
@@ -104,7 +111,7 @@ int main(int argc, char *argv[])
     output = positional.at(0);
   } else
   {
-    std::cerr << "Exactly on positional argument required for output.\n"
+    std::cerr << "Exactly one positional argument required for output.\n"
               << parser.helpString();
   }
 
@@ -113,9 +120,13 @@ int main(int argc, char *argv[])
   std::cout << "input:  " << input << '\n';
   std::cout << "exclude: " << exclude << '\n';
   std::cout << "output:  " << output << '\n';
+  std::cout << "vector: ";
+  for(auto v : vec)
+    std::cout << v << ' ';
+  std::cout << '\n';
 
   return 0;
 }
 ```
 
-Copyright 2022-2023, Joshua Fraser  
+Copyright 2022-2023, Joshua Fraser

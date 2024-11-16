@@ -156,6 +156,52 @@ public:
   }
 
   template<typename T>
+  std::vector<T> parseRange(const std::string& input) const
+  {
+    std::vector<T> result;
+
+    // Check if input contains "..." indicating a range
+    if (input.find("...") != std::string::npos)
+    {
+      // Parse the start and end of the range
+      size_t pos = input.find("...");
+      T start = static_cast<T>(std::stod(input.substr(0, pos)));
+      T end = static_cast<T>(std::stod(input.substr(pos + 3)));
+
+      // Generate all numbers in the range [start, end]
+      for (T i = start; i <= end; ++i)
+        result.push_back(i);
+    }
+    else // Treat as comma delimited list
+    {
+      std::stringstream ss(input);
+      std::string item;
+
+      // Split by comma and add each number to the vector
+      while (std::getline(ss, item, ','))
+        result.push_back(static_cast<T>(std::stod(item)));
+    }
+
+    return result;
+  }
+
+  template<typename T>
+  bool getOptionalRange(const std::string& name, std::vector<T>& vec) const
+  {
+    std::string valueString;
+
+    // Retrieve the option's value as a string
+    if (!getOptionValueString(name, &valueString))
+      return false;
+
+    // Parse the string as a range
+    vec.clear();
+    vec = parseRange<T>(valueString);
+
+    return true;
+  }
+
+  template<typename T>
   bool getRequiredValue(const std::string &name, T *value) const
   {
     if(!isSet(name))

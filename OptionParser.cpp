@@ -150,5 +150,6 @@ bool OptionParser::getOptionValueString(const std::string &name,
   // If not set from command line, use default (if provided)
   if(value->empty()) *value = m_options.at(index).defaultValue;
 
-  return true;
+  // Return true if a value was found for futher parsing
+  return !value->empty();
 }
